@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "appInsights1": {
+      "type": "appInsights"
+    },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": "VaultUri"
+    },
+    "redis1": {
+      "type": "redis",
+      "connectionId": "redisConnection"
+    }
+  }
+}
