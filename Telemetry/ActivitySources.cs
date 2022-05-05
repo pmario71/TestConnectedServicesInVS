@@ -2,9 +2,9 @@
 
 using System.Diagnostics;
 
-namespace TestConnectedServicesInVS
+namespace TestConnectedServicesInVS.Telemetry
 {
-    public static class Telemetry
+    public static class ActivitySources
     {
         //...
 

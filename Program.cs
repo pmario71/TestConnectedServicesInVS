@@ -1,23 +1,27 @@
 using Azure.Identity;
 using Microsoft.Extensions.Caching.Distributed;
-using TestConnectedServicesInVS;
+using TestConnectedServicesInVS.Telemetry;
+using TestConnectedServicesInVS.Workload;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+//var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
+//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry();
+
+builder.Services.AddRedisMultiplexer();
+
 builder.Services.AddDistributedRedisCache(option =>
 {
     option.Configuration = builder.Configuration["redisConnection"];
 });
 
-TestConnectedServicesInVS.OTel.SetupOpenTelemetry(builder);
+TestConnectedServicesInVS.Telemetry.OTel.SetupOpenTelemetry(builder);
 
 var app = builder.Build();
 
@@ -65,15 +69,16 @@ app.MapGet("/cacheusage", async (IDistributedCache dc) =>
     return nr;
 });
 
-app.MapGet("/directredis", async () =>
-{
-    var res = await TestConnectedServicesInVS.RedisAccess.Increment();
-    return res;
-});
+app.MapRoute();
+//app.MapGet("/directredis", async (StackExchange.Redis.IConnectionMultiplexer multiplexer) =>
+//{
+//    var res = await RedisAccess.Increment(multiplexer);
+//    return res;
+//});
 
 app.MapGet("/spawnchildworker/{error:bool}", async (bool error) =>
 {
-    using var parentActivity = Telemetry.TracingServiceActivitySource.StartActivity("SpawnChildActivity");
+    using var parentActivity = ActivitySources.TracingServiceActivitySource.StartActivity("SpawnChildActivity");
     await Task.Delay(500);
     await Task.Run(() => {
         WorkloadProducer.ChildActivity(error).Wait();

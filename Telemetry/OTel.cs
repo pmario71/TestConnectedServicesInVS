@@ -4,16 +4,12 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using CustRedis.StackExchange.Redis;
 
-namespace TestConnectedServicesInVS
+namespace TestConnectedServicesInVS.Telemetry
 {
     internal class OTel
     {
         public static void SetupOpenTelemetry(WebApplicationBuilder builder)
         {
-            // Connect to the server.
-            using var connection = ConnectionMultiplexer.Connect("localhost:6379");
-
-
             // Define some important constants and the activity source
             var serviceName = "TestConnectedServicesInVS";
             var serviceVersion = "1.0.0";
@@ -33,8 +29,8 @@ namespace TestConnectedServicesInVS
                 })
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
-                .AddRedisInstrumentation(connection)
-                .AddSource(Telemetry.TracingServiceActivitySource.Name);
+                .AddRedisInstrumentation()
+                .AddSource(ActivitySources.TracingServiceActivitySource.Name);
             });
         }
 
