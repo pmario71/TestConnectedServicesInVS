@@ -1,5 +1,11 @@
 ﻿# Readme
 
+## Descriptions
+
+* `Connected Services` integration does manage `Redis` container
+* `Jaeger` container needs to be started manually using `StartJaeger.ps1`
+* `Azure Key Vault` usage is commented out for performance reasons
+
 ## Instrumenting StackExchange Redis
 
 * works now for `directRedisCon` endpoint
