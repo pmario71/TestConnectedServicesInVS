@@ -1,5 +1,6 @@
 using Azure.Identity;
 using Microsoft.Extensions.Caching.Distributed;
+using TestConnectedServicesInVS;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,16 @@ app.MapGet("/directredis", async () =>
     return res;
 });
 
+app.MapGet("/spawnchildworker/{error:bool}", async (bool error) =>
+{
+    using var parentActivity = Telemetry.TracingServiceActivitySource.StartActivity("SpawnChildActivity");
+    await Task.Delay(500);
+    await Task.Run(() => {
+        WorkloadProducer.ChildActivity(error).Wait();
+    });
+    return "success";
+});
+
 
 app.Run();
 
@@ -77,3 +88,4 @@ internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
