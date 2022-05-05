@@ -16,10 +16,10 @@ namespace TestConnectedServicesInVS.Workload
             return app;
         }
 
-        public static IServiceCollection AddRedisMultiplexer(this IServiceCollection services)
+        public static WebApplicationBuilder AddRedisMultiplexer(this WebApplicationBuilder builder)
         {
-            services.AddSingleton<IConnectionMultiplexer>(_=> ConnectionMultiplexer.Connect("localhost:6379"));
-            return services;
+            builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(builder.Configuration["redisConnection"]));
+            return builder;
         }
     }
 }

@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry();
 
-builder.Services.AddRedisMultiplexer();
+builder.AddRedisMultiplexer();
 
 builder.Services.AddDistributedRedisCache(option =>
 {
@@ -70,11 +70,6 @@ app.MapGet("/cacheusage", async (IDistributedCache dc) =>
 });
 
 app.MapRoute();
-//app.MapGet("/directredis", async (StackExchange.Redis.IConnectionMultiplexer multiplexer) =>
-//{
-//    var res = await RedisAccess.Increment(multiplexer);
-//    return res;
-//});
 
 app.MapGet("/spawnchildworker/{error:bool}", async (bool error) =>
 {
